@@ -24,7 +24,7 @@ function newsFeed() {
   // DOM API를 최소화 사용, 문자열을 이용해서 마크업 구조 사용
     newsList.push(`   
       <li>
-        <a href="#${newsFeed[i].id}">
+        <a href="#/show/${newsFeed[i].id}">
           ${newsFeed[i].title} (${newsFeed[i].comments_count})
         </a>
       </li>
@@ -34,26 +34,23 @@ function newsFeed() {
 newsList.push('</ul>');
 newsList.push(`
   <div>
-    <a href="#/page/${store.currentPage - 1}">이전 페이지</a>
+    <a href="#/page/${store.currentPage > 1 ? store.currentPage - 1 : 1}">이전 페이지</a>
     <a href="#/page/${store.currentPage + 1}">다음 페이지</a>
   </div>
-`)
+`);
 
-container.innerHTML = newsList.join('')   // 구분자 없는 join
-
+container.innerHTML = newsList.join('');   // 구분자 없는 join
 }
 
-const ul = document.createElement('ul');    // ul 태그 만들기
-
 function newsDetail() {
-  const id = location.hash.substring(1)
-
-  const newsContent = getData(CONTENT_URL.replace('@id', id));
+  const id = location.hash.substring(7);
+  const newsContent = getData(CONTENT_URL.replace('@id', id))
 
   container.innerHTML = `
     <h1>${newsContent.title}</h1>
+
     <div>
-      <a href="#">목록으로</a>
+      <a href="#/page/${store.currentPage}">목록으로</a>
     </div>
   `;
 }
@@ -64,8 +61,8 @@ function router() {
   if (routePath === '') {   // location.hash 값이 #이면 참으로 반환
     newsFeed();
   } else if (routePath.indexOf('#/page/') >= 0) {
-    store.currentPage = 2;
-    newsDetail();
+    store.currentPage = Number(routePath.substring(7));
+    newsFeed();
   } else {
     newsDetail();
   }
@@ -74,4 +71,3 @@ function router() {
 window.addEventListener('hashchange', router);
 
 router();
-

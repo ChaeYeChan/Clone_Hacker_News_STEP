@@ -144,20 +144,18 @@ function newsFeed() {
   for (var i = (store.currentPage - 1) * 10; i < store.currentPage * 10; i++) {
     // 게시물 10개 가져오기
     // DOM API를 최소화 사용, 문자열을 이용해서 마크업 구조 사용
-    newsList.push("   \n      <li>\n        <a href=\"#".concat(newsFeed[i].id, "\">\n          ").concat(newsFeed[i].title, " (").concat(newsFeed[i].comments_count, ")\n        </a>\n      </li>\n    "));
+    newsList.push("   \n      <li>\n        <a href=\"#/show/".concat(newsFeed[i].id, "\">\n          ").concat(newsFeed[i].title, " (").concat(newsFeed[i].comments_count, ")\n        </a>\n      </li>\n    "));
   }
 
   newsList.push('</ul>');
-  newsList.push("\n  <div>\n    <a href=\"#/page/".concat(store.currentPage - 1, "\">\uC774\uC804 \uD398\uC774\uC9C0</a>\n    <a href=\"#/page/").concat(store.currentPage + 1, "\">\uB2E4\uC74C \uD398\uC774\uC9C0</a>\n  </div>\n"));
+  newsList.push("\n  <div>\n    <a href=\"#/page/".concat(store.currentPage > 1 ? store.currentPage - 1 : 1, "\">\uC774\uC804 \uD398\uC774\uC9C0</a>\n    <a href=\"#/page/").concat(store.currentPage + 1, "\">\uB2E4\uC74C \uD398\uC774\uC9C0</a>\n  </div>\n"));
   container.innerHTML = newsList.join(''); // 구분자 없는 join
 }
 
-var ul = document.createElement('ul'); // ul 태그 만들기
-
 function newsDetail() {
-  var id = location.hash.substring(1);
+  var id = location.hash.substring(7);
   var newsContent = getData(CONTENT_URL.replace('@id', id));
-  container.innerHTML = "\n    <h1>".concat(newsContent.title, "</h1>\n    <div>\n      <a href=\"#\">\uBAA9\uB85D\uC73C\uB85C</a>\n    </div>\n  ");
+  container.innerHTML = "\n    <h1>".concat(newsContent.title, "</h1>\n\n    <div>\n      <a href=\"#/page/").concat(store.currentPage, "\">\uBAA9\uB85D\uC73C\uB85C</a>\n    </div>\n  ");
 }
 
 function router() {
@@ -167,8 +165,8 @@ function router() {
     // location.hash 값이 #이면 참으로 반환
     newsFeed();
   } else if (routePath.indexOf('#/page/') >= 0) {
-    store.currentPage = 2;
-    newsDetail();
+    store.currentPage = Number(routePath.substring(7));
+    newsFeed();
   } else {
     newsDetail();
   }
